@@ -1,20 +1,20 @@
 class BooksController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
+  impressionist :actions => [:show, :index]
 
-  def show
-    @book = Book.find(params[:id])
-    @book_new = Book.new
-    @book_comment = BookComment.new
-    @comments = @book.book_comments
-  end
+    def show
+      @book = Book.find(params[:id])
+      @book_new = Book.new
+      @book_comment = BookComment.new
+      @comments = @book.book_comments
+      impressionist(@book, nil, unique: [:session_hash.to_s])
+    end
 
-  def index
-    @book = Book.new
-    @books = Book.find(Favorite.group(:book_id).order('count(book_id) desc').pluck(:book_id))
-  end
-
-
+    def index
+      @book = Book.new
+      @books = Book.find(Favorite.group(:book_id).order('count(book_id) desc').pluck(:book_id))
+    end
 
   def create
     @book = Book.new(book_params)
