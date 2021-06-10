@@ -1,0 +1,24 @@
+<table class='table'>
+  <thead>
+    <tr>
+      <th></th>
+      <th>グループ名</th>
+      <th>紹介文</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% group_lists.each do |list| %>
+      <tr>
+        <td><%= attachment_image_tag(list, :profile_image, :fill, 50, 50, fallback: "no-image-icon.jpg") %></td>
+        <td><%= link_to list.name, group_path(list) %></td>
+        <td><%= list.introduction %></td>
+        <td>
+          <% if list.owner_id == current_user.id %>
+            <%= link_to 'Edit', edit_group_path(list), class: 'btn btn-success' %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
