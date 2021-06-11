@@ -5,7 +5,10 @@ Rails.application.routes.draw do
   get '/search', to: 'searchs#search'
   get 'chat/:id' => 'chats#show', as: 'chat'
   resources :chats, only: [:create]
-  resources :groups
+  resources :groups do
+    get "join" => "groups#join"
+    resources :group_users, only: :create
+  end
   resources :users,only: [:show,:index,:edit,:update] do
     resource :relationships, only: [:create, :destroy]
     get 'followings' => 'relationships#followings',as: 'followings'

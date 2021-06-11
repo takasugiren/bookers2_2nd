@@ -4,18 +4,22 @@ class GroupsController < ApplicationController
   def index
     @group_lists = Group.all
     @book = Book.new
-    @group_joining = GroupUser.where(user_id: current_user.id)
-    @group_lists_none = "グループに参加してません。"
   end
 
   def new
     @group = Group.new
   end
+  
+  def join
+    @group = Group.find(params[:group_id])
+    @group.users << current_user
+    redirect_to  groups_path
+  end
 
   def create
     @group = Group.new(group_params)
-    @group.users << current_user
     @group.owner_id = current_user.id
+    @group.users << current_user
     if @group.save
       redirect_to groups_url, notice: 'グループを作成しました。'
     else
@@ -26,6 +30,7 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
     @book = Book.new
+    @group_user = GroupUser.find_by(user_id: current_user.id, group_id: params[:id])
   end
 
   def edit
@@ -42,10 +47,10 @@ class GroupsController < ApplicationController
   end
 
   def destroy
-    delete_group = Group.find(params[:id])
-    if delete_group.destroy
-      redirect_to groups_path, notice: 'グループを削除しました。'
-    end
+    @group = Group.find(params[:id])
+    @group.users.delete(current_user)
+      redirect_to groups_path
+
   end
 
   private
@@ -55,7 +60,7 @@ class GroupsController < ApplicationController
   end
 
   def group_params
-    params.require(:group).permit(:name, :introduction, :profile_image, user_ids: [])
+    params.require(:group).permit(:name, :introduction, :profile_image)
   end
 
 end
